@@ -96,8 +96,8 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(comboArray[position].equals("동탄")) {
                     selectedLocation = SiteMacAddr.DONGTAN.addr();
-                }else if(comboArray[position].equals("E5")) {
-                    selectedLocation = SiteMacAddr.E5.addr();
+                }else if(comboArray[position].equals("F19")) {
+                    selectedLocation = SiteMacAddr.F19.addr();
                 }
             }
             @Override
@@ -142,7 +142,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 String editTextString2 = editTextString.substring(2);
 
                 selectedLocation+= ":"+editTextString1 + ":" + editTextString2;
-//                System.out.println("-------> "+selectedLocation);
+                System.out.println("선택한 macAddress -------> "+selectedLocation);   //macAddressTest
 
                 for(int i = 0; i < listView.getCount(); i++){
                     beaconSingleton_macAddress = beaconSingleton.getBeaconDomainList().get(i).getMacAddress();
@@ -264,15 +264,34 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                         String macAddress = beacon.getBluetoothAddress();
                         String[] macArray = macAddress.split(":");
 
-                        int num1 = Integer.parseInt(macArray[4]);
-                        int num2 = Integer.parseInt(macArray[5]);
+//                        String macArrayString = macArray[4]+macArray[5]; //2023-02-10 (test코드) String으로 전부 더한 다음 정수로 변환(String -> hex -> int)
+
+                        int num1 = 0;
+                        int num2 = 0;
+
+                        try{
+
+                            num1 = Integer.parseInt(macArray[4]);
+                            num2 = Integer.parseInt(macArray[5]);
+
+//                            System.out.println("try -> : "+ Integer.parseInt(macArrayString, 16)); //2023-02-10에 추가 (test코드)
+
+                        }catch (NumberFormatException e){
+
+                            num1 = Integer.parseInt(macArray[4], 16);
+                            num2 = Integer.parseInt(macArray[5], 16);
+
+//                            System.out.println("catch -> : "+ Integer.parseInt(macArrayString, 16)); //2023-02-10에 추가 (test코드)
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
 
                         int serialNumber = (num1 * 100) + num2;
 
-//                        int serialNumber = num1 + num2;
                         System.out.println("serialNumber : => "+serialNumber);
 
-                        if (beacon.getRssi() >= -90) { //-60
+                        if (beacon.getRssi() >= -60) { //-60
                             if (beaconSingleton.getBeaconDomainList().isEmpty()) {
                                 beaconSingleton.getBeaconDomainList().add(new BeaconDomain(macAddress, serialNumber));
                                 ++count;
@@ -312,7 +331,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
             beaconManager.addRangeNotifier(rangeNotifier);
         } catch (RemoteException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
