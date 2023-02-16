@@ -15,6 +15,10 @@ public class BeaconSingleton {
     public void setBeaconDomainList(ArrayList<BeaconDomain> beaconDomainList) {
         this.beaconDomainList = beaconDomainList;
     }
+    //2023-02-15
+    public void resetBeaconDomainList(){
+        beaconDomainList.clear();
+    }
 
     private static final BeaconSingleton instance = new BeaconSingleton();
 

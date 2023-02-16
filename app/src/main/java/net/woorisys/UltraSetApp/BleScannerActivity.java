@@ -168,6 +168,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
             @Override
             public void onClick(View v) {
                 finish();
+                beaconSingleton.resetBeaconDomainList(); //2023-02-15
                 startActivity(getIntent());
             }
         });
@@ -291,7 +292,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
 
                         System.out.println("serialNumber : => "+serialNumber);
 
-                        if (beacon.getRssi() >= -60) { //-60
+                        if (beacon.getRssi() >= -80) { //-60 <- 너무 낮아서 리스트에 출력이 되지 않음.
                             if (beaconSingleton.getBeaconDomainList().isEmpty()) {
                                 beaconSingleton.getBeaconDomainList().add(new BeaconDomain(macAddress, serialNumber));
                                 ++count;
