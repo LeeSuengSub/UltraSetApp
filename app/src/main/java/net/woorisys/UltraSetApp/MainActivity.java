@@ -65,21 +65,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         Toast.makeText(this, "requestCode : "+requestCode+"  permissions : "+permissions+"  grantResults :"+grantResults, Toast.LENGTH_SHORT).show();
     }
 
-    //뒤로가기 두번클릭
-//    @Override
-//    public void onBackPressed(){
-//        long tempTime = System.currentTimeMillis();
-//        long intervalTime = tempTime - presstime;
-//
-//        if(0 <= intervalTime && finishtimeed >= intervalTime){
-//            moveTaskToBack(true); //태스크를 백그라운드로 이동
-//            finishAndRemoveTask(); //액티비티 종료 + 태스크 리스트에서 지우기
-//            android.os.Process.killProcess(android.os.Process.myPid()); //앱 프로세스 종료
-//        }else{
-//            presstime = tempTime;
-//            Toast.makeText(this, "한번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show();
-//        }
-//    }
     @Override
     public void onBackPressed() {
         long tempTime = System.currentTimeMillis();

@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -98,6 +100,16 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                     selectedLocation = SiteMacAddr.DONGTAN.addr();
                 }else if(comboArray[position].equals("F19")) {
                     selectedLocation = SiteMacAddr.F19.addr();
+                }else if(comboArray[position].equals("문흥")) {
+                    selectedLocation = SiteMacAddr.MUNHUENG.addr();
+                }else if(comboArray[position].equals("둔촌")) {
+                    selectedLocation = SiteMacAddr.DUNCHON.addr();
+                }else if(comboArray[position].equals("온천")) {
+                    selectedLocation = SiteMacAddr.ONCHUN.addr();
+                }else if(comboArray[position].equals("지산")) {
+                    selectedLocation = SiteMacAddr.JISAN.addr();
+                }else if(comboArray[position].equals("오포2")) {
+                    selectedLocation = SiteMacAddr.OPPO2.addr();
                 }
             }
             @Override
