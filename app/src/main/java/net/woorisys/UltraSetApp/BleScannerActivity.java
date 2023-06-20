@@ -92,6 +92,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, comboArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_field.setAdapter(adapter);
+        spinner_field.setPrompt("현장");
 
         spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

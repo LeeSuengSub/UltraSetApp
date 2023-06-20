@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="spinnerArray">
-        <item>-선택-</item>
+        <item>----</item>
         <item>동탄</item>
         <item>F19</item>
         <item>문흥</item>

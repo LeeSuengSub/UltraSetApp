@@ -22,13 +22,14 @@
         android:layout_marginTop="30dp"
         android:orientation="horizontal">
 
+<!--        dropdown-->
         <Spinner
             android:id="@+id/comboBox"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="5dp"
-            android:spinnerMode="dropdown"
+            android:spinnerMode="dialog"
             android:gravity="center" />
 
         <EditText
