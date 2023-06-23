@@ -167,7 +167,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 }
 
                 if(count <= 0){
-                    Toast.makeText(BleScannerActivity.this, "사이트를 선택해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BleScannerActivity.this, "통신이상\n현장을 확인후 다시 진행해주세요.", Toast.LENGTH_SHORT).show();
                     spinner_field.setSelection(0);
                 }else{
                     Intent intent = new Intent(BleScannerActivity.this, DeviceControlActivity.class);

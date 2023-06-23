@@ -89,47 +89,93 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_margin="20dp"
-        android:orientation="horizontal">
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:weightSum="4">
 
         <Button
             android:id="@+id/readButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:text="READ"
             android:textSize="12sp"
+            android:textStyle="bold"
             android:gravity="center"/>
 
         <Button
             android:id="@+id/commonButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:text="일반"
             android:textSize="12sp"
+            android:textStyle="bold"
             android:gravity="center"/>
 
         <Button
             android:id="@+id/disorderButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:text="장애인"
             android:textSize="12sp"
+            android:textStyle="bold"
             android:gravity="center"/>
 
         <Button
             android:id="@+id/writeButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:text="거리"
             android:textSize="12sp"
+            android:textStyle="bold"
             android:gravity="center"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/yellowButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="노랑"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/cyanButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:text="시안"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/pinkButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:text="핑크"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
     </LinearLayout>
 
     <ExpandableListView
