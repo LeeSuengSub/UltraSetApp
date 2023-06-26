@@ -145,10 +145,21 @@
         android:weightSum="3">
 
         <Button
+            android:id="@+id/pinkButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="핑크"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <Button
             android:id="@+id/yellowButton"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_weight="1"
+            android:layout_marginLeft="10dp"
             android:text="노랑"
             android:textSize="12sp"
             android:textStyle="bold"
@@ -161,17 +172,6 @@
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:text="시안"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:gravity="center"/>
-
-        <Button
-            android:id="@+id/pinkButton"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginLeft="10dp"
-            android:text="핑크"
             android:textSize="12sp"
             android:textStyle="bold"
             android:gravity="center"/>

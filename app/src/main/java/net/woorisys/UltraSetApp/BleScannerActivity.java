@@ -111,6 +111,12 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                     selectedLocation = SiteMacAddr.JISAN.addr();
                 }else if(comboArray[position].equals("오포2")) {
                     selectedLocation = SiteMacAddr.OPPO2.addr();
+                } else if (comboArray[position].equals("노형")) {
+                    selectedLocation = SiteMacAddr.NOHYEONG.addr();
+                } else if (comboArray[position].equals("연동")) {
+                    selectedLocation = SiteMacAddr.YEON.addr();
+                } else if (comboArray[position].equals("배방")) {
+                    selectedLocation = SiteMacAddr.BAEBANG.addr();
                 }
             }
             @Override

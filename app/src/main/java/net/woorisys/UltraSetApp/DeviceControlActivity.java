@@ -45,9 +45,9 @@ public class DeviceControlActivity extends AppCompatActivity {
 
     public static final String COMMON_SETTING = "AA020000ACAB";
     public static final String DISORDER_SETTING = "AA020001ADAB";
-    public static final String YELLOW_SETTING = "AA020002AEAB";
-    public static final String CYAN_SETTING = "AA020002AFAB";
-    public static final String PINK_SETTING = "AA020002B0AB";
+    public static final String PINK_SETTING = "AA020002AEAB";
+    public static final String YELLOW_SETTING = "AA020003AFAB";
+    public static final String CYAN_SETTING = "AA020004B0AB";
 
     private TextView mConnectionState;
     private TextView mDataField;
@@ -144,6 +144,19 @@ public class DeviceControlActivity extends AppCompatActivity {
             }
         });
 
+        //분홍색
+        pinkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mDataField.length() <=0) {
+                    Toast.makeText(mBluetoothLeService,"read한 다음 시도해주세요.",Toast.LENGTH_SHORT);
+                    return;
+                }
+                byte[] data = hexStringToByteArray(PINK_SETTING);
+                mBluetoothLeService.writeCharacteristic(mNotifyCharacteristic, data);
+            }
+        });
+
         //노란색
         yellowButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,19 +179,6 @@ public class DeviceControlActivity extends AppCompatActivity {
                     return;
                 }
                 byte[] data = hexStringToByteArray(CYAN_SETTING);
-                mBluetoothLeService.writeCharacteristic(mNotifyCharacteristic, data);
-            }
-        });
-
-        //분홍색
-        pinkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mDataField.length() <=0) {
-                    Toast.makeText(mBluetoothLeService,"read한 다음 시도해주세요.",Toast.LENGTH_SHORT);
-                    return;
-                }
-                byte[] data = hexStringToByteArray(PINK_SETTING);
                 mBluetoothLeService.writeCharacteristic(mNotifyCharacteristic, data);
             }
         });
@@ -211,14 +211,14 @@ public class DeviceControlActivity extends AppCompatActivity {
                 }else if(mDataFieldState == 1){
                     State = "장애인";
                 }else if(mDataFieldState == 2){
-                    State = "Yellow";
-                }else if(mDataFieldState == 3){
-                    State = "Cyan";
-                }else if(mDataFieldState == 4){
                     State = "Pink";
+                }else if(mDataFieldState == 3){
+                    State = "Yellow";
+                }else if(mDataFieldState == 4){
+                    State = "Cyan";
                 }
 
-                builder.setMessage("설정높이 : "+mDataFieldSettingHeight+"\n"+ "측정높이 : "+mDataFieldMeasurementHeight +"\n"+"상태 : "+State);
+                builder.setMessage("설정높이 : "+mDataFieldSettingHeight+"\n측정높이 : "+mDataFieldMeasurementHeight +"\n상태 : "+State);
 
                 builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
