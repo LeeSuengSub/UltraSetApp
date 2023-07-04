@@ -10,7 +10,8 @@ public enum SiteMacAddr {
     OPPO2("41:61:01:14"),
     NOHYEONG("50:11:01:22"),
     YEON("50:11:01:37"),
-    BAEBANG("44:20:02:53");
+    BAEBANG("44:20:02:53"),
+    SOOSUNG("27:26:01:03");
     private final String addr;
 
     SiteMacAddr(String addr) {
