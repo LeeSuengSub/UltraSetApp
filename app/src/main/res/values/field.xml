@@ -2,6 +2,15 @@
 <resources>
     <string-array name="spinnerArray">
         <item>----</item>
+        <item>베이센트</item>
+        <item>프리모</item>
+        <item>SM7</item>
+        <item>동신천</item>
+        <item>거제</item>
+        <item>양평</item>
+        <item>천안</item>
+        <item>청주</item>
+        <item>하남</item>
         <item>동탄</item>
         <item>F19</item>
         <item>문흥</item>
@@ -14,11 +23,5 @@
         <item>배방</item>
         <item>수성</item>
         <item>오산</item>
-        <item>거제</item>
-        <item>양평</item>
-        <item>천안</item>
-        <item>청주</item>
-        <item>하남</item>
-        <item>동신천</item>
     </string-array>
 </resources>

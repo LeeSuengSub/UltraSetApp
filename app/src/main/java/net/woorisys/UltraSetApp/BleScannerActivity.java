@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,6 +134,12 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                     selectedLocation = SiteMacAddr.HANAM.addr();
                 }else if (comboArray[position].equals("동신천")) {
                     selectedLocation = SiteMacAddr.DONGSHINCHOEN.addr();
+                }else if (comboArray[position].equals("SM7")) {
+                    selectedLocation = SiteMacAddr.SM7.addr();
+                }else if(comboArray[position].equals("프리모")) {
+                    selectedLocation = SiteMacAddr.PRIMO.addr();
+                } else if (comboArray[position].equals("베이센트")) {
+                    selectedLocation = SiteMacAddr.BAYCENT.addr();
                 }
             }
             @Override
@@ -286,7 +293,6 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
     @Override
     public void onBeaconServiceConnect() {
         RangeNotifier rangeNotifier = new RangeNotifier() {
-
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 // [비콘이 감지되면 해당 함수가 호출]
@@ -295,7 +301,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 int count = 0;
                 if (beacons.size() > 0) {
                     for (Beacon beacon : beacons) {
-                        System.out.println("beacon : " + beacon.getBluetoothAddress() + " rssi : " + beacon.getRssi());
+//                        System.out.println("beacon : " + beacon.getBluetoothAddress() + " rssi : " + beacon.getRssi());
 
                         String macAddress = beacon.getBluetoothAddress();
                         String[] macArray = macAddress.split(":");
@@ -325,9 +331,9 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
 
                         int serialNumber = (num1 * 100) + num2;
 
-                        System.out.println("serialNumber : => "+serialNumber);
+//                        System.out.println("serialNumber : => "+serialNumber);
 
-                        if (beacon.getRssi() >= -80) { //-60 <- 너무 낮아서 리스트에 출력이 되지 않음.
+                        if (beacon.getRssi() >= -75) { //-60 <- 너무 낮아서 리스트에 출력이 되지 않음.
                             if (beaconSingleton.getBeaconDomainList().isEmpty()) {
                                 beaconSingleton.getBeaconDomainList().add(new BeaconDomain(macAddress, serialNumber));
                                 ++count;
