@@ -1,18 +1,12 @@
 package net.woorisys.UltraSetApp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +20,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -42,14 +38,10 @@ import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-public class BleScannerActivity extends AppCompatActivity implements BeaconConsumer {
+public class SiteBleScannerActivity extends AppCompatActivity implements BeaconConsumer {
 
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter bluetoothAdapter;
@@ -58,7 +50,6 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
     private EditText editText;
     Button connectBtn;
 //    Button rescanBtn;
-    FloatingActionButton rescanBtn;
     String selectedLocation = null;
     //싱글톤
     private BeaconSingleton beaconSingleton = BeaconSingleton.getInstance();
@@ -67,12 +58,11 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ble_scanner);
+        setContentView(R.layout.activity_site_ble_scanner);
 
-//        editText = (EditText) findViewById(R.id.editText);
-//        connectBtn = (Button) findViewById(R.id.connectBtn);
+        editText = (EditText) findViewById(R.id.editText);
+        connectBtn = (Button) findViewById(R.id.connectBtn);
 //        rescanBtn = (Button) findViewById(R.id.rescanBtn);
-        rescanBtn = (FloatingActionButton) findViewById(R.id.fab);
         listView = (ListView) findViewById(R.id.listview);
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -83,18 +73,18 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         beaconManager.bind(this);
-
+/*
         //Spinner(ComboBox)
-//        Spinner spinner_field = (Spinner) findViewById(R.id.comboBox);
+        Spinner spinner_field = (Spinner) findViewById(R.id.comboBox);
 
         String[] comboArray = getResources().getStringArray(R.array.spinnerArray);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, comboArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner_field.setAdapter(adapter);
-//        spinner_field.setPrompt("현장");
+        spinner_field.setAdapter(adapter);
+        spinner_field.setPrompt("현장");
 
-        /*
+
         spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -147,18 +137,18 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
 
             }
         });
+ */
 
-         */
 
         //리스트뷰 클릭시
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent DeviceControl = new Intent(BleScannerActivity.this,DeviceControlActivity.class);
+                Intent DeviceControl = new Intent(SiteBleScannerActivity.this,DeviceControlActivity.class);
                 startActivity(DeviceControl);
             }
         });
-/*
+
         //MacAddress를 입력 후 직접 연동하기
         connectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,10 +158,10 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 String beaconSingleton_macAddress; //싱글톤에 들어있는 macAddress.
 
                 if(editText.length() <= 0){
-                    Toast.makeText(BleScannerActivity.this, "시리얼번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SiteBleScannerActivity.this, "시리얼번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }else if(!isNumeric(editTextString)) {
-                    Toast.makeText(BleScannerActivity.this, "숫자만 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SiteBleScannerActivity.this, "숫자만 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -196,20 +186,20 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                         System.out.println("count -->"+count);
                     }
                 }
-
+/*
                 if(count <= 0){
-                    Toast.makeText(BleScannerActivity.this, "통신이상\n현장을 확인후 다시 진행해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SiteBleScannerActivity.this, "통신이상\n현장을 확인후 다시 진행해주세요.", Toast.LENGTH_SHORT).show();
                     spinner_field.setSelection(0);
                 }else{
-                    Intent intent = new Intent(BleScannerActivity.this, DeviceControlActivity.class);
+                    Intent intent = new Intent(SiteBleScannerActivity.this, DeviceControlActivity.class);
                     intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, selectedLocation);
                     spinner_field.setSelection(0);
                     startActivity(intent);
                 }
-
+ */
             }
         });
-        */
+/*
         rescanBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,7 +208,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 startActivity(getIntent());
             }
         });
-
+ */
     }
 
     @Override
@@ -285,7 +275,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(BleScannerActivity.this, DeviceControlActivity.class);
+                    Intent intent = new Intent(SiteBleScannerActivity.this, DeviceControlActivity.class);
                     intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, beaconSingleton.getBeaconDomainList().get(position).getMacAddress());
                     startActivity(intent);
                 }

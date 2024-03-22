@@ -43,6 +43,9 @@
             android:name=".BleScannerActivity"
             android:exported="true" />
         <activity
+            android:name=".SiteBleScannerActivity"
+            android:exported="true" />
+        <activity
             android:name=".DeviceControlActivity"
             android:exported="true" />
         <activity

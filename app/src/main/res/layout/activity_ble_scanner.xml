@@ -1,68 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity"
     android:orientation="vertical"
     android:gravity="center_horizontal">
 
-    <TextView
-        android:id="@+id/Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="주차면 선택"
-        android:textSize="30sp"
-        android:gravity="center"
-        android:textColor="#000000"/>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
 
-<!--        dropdown-->
-        <Spinner
-            android:id="@+id/comboBox"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="5dp"
-            android:spinnerMode="dialog"
-            android:gravity="center" />
-
-        <EditText
-            android:id="@+id/editText"
+        <TextView
+            android:id="@+id/Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionSearch"
-            android:maxLines="1"
-            android:inputType="text"
-            android:hint="내용을 입력해주세요." />
+            android:text="주차면 선택"
+            android:textSize="30sp"
+            android:gravity="left"
+            android:textStyle="bold"
+            android:background="@color/black"
+            android:textColor="#ffffff"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@color/black" />
 
-    <Button
-        android:id="@+id/connectBtn"
-        android:layout_width="match_parent"
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textFilterEnabled="true"
+            android:dividerHeight="4dp"
+            tools:listitem="@layout/scan_list_item"/>
+
+        </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="연결"
-        android:textStyle="bold"
-        android:textSize="20sp" />
-    <Button
-        android:id="@+id/rescanBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="reScan"
-        android:textStyle="bold"
-        android:textSize="20sp"/>
-
-    <ListView
-        android:id="@+id/listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textFilterEnabled="true"
-        tools:listitem="@layout/scan_list_item"/>
-
-</LinearLayout>
+        android:layout_margin="10dp"
+        android:gravity="end"
+        android:src="@android:drawable/ic_menu_rotate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
