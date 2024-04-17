@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -50,7 +53,9 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
     private EditText editText;
     Button connectBtn;
 //    Button rescanBtn;
+    CheckBox checkBox50, checkBox60, checkBox70;
     String selectedLocation = null;
+    private static int SELECTED_RSSI = -50;
     //싱글톤
     private BeaconSingleton beaconSingleton = BeaconSingleton.getInstance();
 
@@ -62,8 +67,10 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
 
         editText = (EditText) findViewById(R.id.editText);
         connectBtn = (Button) findViewById(R.id.connectBtn);
-//        rescanBtn = (Button) findViewById(R.id.rescanBtn);
         listView = (ListView) findViewById(R.id.listview);
+        checkBox50 = (CheckBox) findViewById(R.id.checkbox50);
+        checkBox60 = (CheckBox) findViewById(R.id.checkbox60);
+        checkBox70 = (CheckBox) findViewById(R.id.checkbox70);
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
@@ -73,71 +80,6 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         beaconManager.bind(this);
-/*
-        //Spinner(ComboBox)
-        Spinner spinner_field = (Spinner) findViewById(R.id.comboBox);
-
-        String[] comboArray = getResources().getStringArray(R.array.spinnerArray);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, comboArray);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_field.setAdapter(adapter);
-        spinner_field.setPrompt("현장");
-
-
-        spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(comboArray[position].equals("동탄")) {
-                    selectedLocation = SiteMacAddr.DONGTAN.addr();
-                }else if(comboArray[position].equals("F19")) {
-                    selectedLocation = SiteMacAddr.F19.addr();
-                }else if(comboArray[position].equals("문흥")) {
-                    selectedLocation = SiteMacAddr.MUNHUENG.addr();
-                }else if(comboArray[position].equals("둔촌")) {
-                    selectedLocation = SiteMacAddr.DUNCHON.addr();
-                }else if(comboArray[position].equals("온천")) {
-                    selectedLocation = SiteMacAddr.ONCHUN.addr();
-                }else if(comboArray[position].equals("지산")) {
-                    selectedLocation = SiteMacAddr.JISAN.addr();
-                }else if(comboArray[position].equals("오포2")) {
-                    selectedLocation = SiteMacAddr.OPPO2.addr();
-                } else if (comboArray[position].equals("노형")) {
-                    selectedLocation = SiteMacAddr.NOHYEONG.addr();
-                } else if (comboArray[position].equals("연동")) {
-                    selectedLocation = SiteMacAddr.YEON.addr();
-                } else if (comboArray[position].equals("배방")) {
-                    selectedLocation = SiteMacAddr.BAEBANG.addr();
-                }else if (comboArray[position].equals("수성")) {
-                    selectedLocation = SiteMacAddr.SOOSUNG.addr();
-                }else if (comboArray[position].equals("오산")) {
-                    selectedLocation = SiteMacAddr.OSAN.addr();
-                }else if (comboArray[position].equals("거제")) {
-                    selectedLocation = SiteMacAddr.GEOJE.addr();
-                }else if (comboArray[position].equals("양평")) {
-                    selectedLocation = SiteMacAddr.YANGPYEONG.addr();
-                }else if (comboArray[position].equals("천안")) {
-                    selectedLocation = SiteMacAddr.CHEONAN.addr();
-                }else if (comboArray[position].equals("청주")) {
-                    selectedLocation = SiteMacAddr.CHEONGJU.addr();
-                }else if (comboArray[position].equals("하남")) {
-                    selectedLocation = SiteMacAddr.HANAM.addr();
-                }else if (comboArray[position].equals("동신천")) {
-                    selectedLocation = SiteMacAddr.DONGSHINCHOEN.addr();
-                }else if (comboArray[position].equals("SM7")) {
-                    selectedLocation = SiteMacAddr.SM7.addr();
-                }else if(comboArray[position].equals("프리모")) {
-                    selectedLocation = SiteMacAddr.PRIMO.addr();
-                } else if (comboArray[position].equals("베이센트")) {
-                    selectedLocation = SiteMacAddr.BAYCENT.addr();
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
- */
 
 
         //리스트뷰 클릭시
@@ -175,40 +117,54 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
                 String editTextString1 = editTextString.substring(0,2);
                 String editTextString2 = editTextString.substring(2);
 
-                selectedLocation+= ":"+editTextString1 + ":" + editTextString2;
-                System.out.println("선택한 macAddress -------> "+selectedLocation);   //macAddressTest
+//                selectedLocation += ":"+editTextString1 + ":" + editTextString2;
+//                System.out.println("선택한 macAddress -------> "+selectedLocation);   //macAddressTest
 
                 for(int i = 0; i < listView.getCount(); i++){
                     beaconSingleton_macAddress = beaconSingleton.getBeaconDomainList().get(i).getMacAddress();
 
-                    if(selectedLocation.equals(beaconSingleton_macAddress)){
+                    String siteBeacon = beaconSingleton_macAddress.substring(0,beaconSingleton_macAddress.length() - 5);
+
+                    siteBeacon += editTextString1 + ":" + editTextString2;
+
+                    System.out.println("siteBeacon ==> : " + siteBeacon);
                         ++count;
-                        System.out.println("count -->"+count);
-                    }
                 }
-/*
                 if(count <= 0){
                     Toast.makeText(SiteBleScannerActivity.this, "통신이상\n현장을 확인후 다시 진행해주세요.", Toast.LENGTH_SHORT).show();
-                    spinner_field.setSelection(0);
-                }else{
-                    Intent intent = new Intent(SiteBleScannerActivity.this, DeviceControlActivity.class);
-                    intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, selectedLocation);
-                    spinner_field.setSelection(0);
-                    startActivity(intent);
+                }else {
+                    Intent DeviceControl = new Intent(SiteBleScannerActivity.this, DeviceControlActivity.class);
+                    startActivity(DeviceControl);
                 }
- */
             }
         });
-/*
-        rescanBtn.setOnClickListener(new View.OnClickListener() {
+
+        CompoundButton.OnCheckedChangeListener checkBoxOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                finish();
-                beaconSingleton.resetBeaconDomainList(); //2023-02-15
-                startActivity(getIntent());
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked) {
+                    if(compoundButton == checkBox50) {
+                        checkBox60.setChecked(false);
+                        checkBox70.setChecked(false);
+
+                        SELECTED_RSSI = -50;
+                    }else if(compoundButton == checkBox60) {
+                        checkBox50.setChecked(false);
+                        checkBox70.setChecked(false);
+
+                        SELECTED_RSSI = -60;
+                    }else if(compoundButton == checkBox70) {
+                        checkBox50.setChecked(false);
+                        checkBox60.setChecked(false);
+
+                        SELECTED_RSSI = -70;
+                    }
+                }
             }
-        });
- */
+        };
+        checkBox50.setOnCheckedChangeListener(checkBoxOnCheckedChangeListener);
+        checkBox60.setOnCheckedChangeListener(checkBoxOnCheckedChangeListener);
+        checkBox70.setOnCheckedChangeListener(checkBoxOnCheckedChangeListener);
     }
 
     @Override
@@ -328,7 +284,7 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
 
 //                        System.out.println("serialNumber : => "+serialNumber);
 
-                        if (beacon.getRssi() >= -70) { //-60 <- 너무 낮아서 리스트에 출력이 되지 않음.
+                        if (beacon.getRssi() >= SELECTED_RSSI) { //-60 <- 너무 낮아서 리스트에 출력이 되지 않음.
                             if (beaconSingleton.getBeaconDomainList().isEmpty()) {
                                 beaconSingleton.getBeaconDomainList().add(new BeaconDomain(macAddress, serialNumber));
                                 ++count;
@@ -360,6 +316,7 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
                             listView.setAdapter(beaconAdapter);
                             beaconAdapter.notifyDataSetChanged();
                         }
+                        System.out.println("SELECTED_RSSI : " + SELECTED_RSSI);
                     }
                 }
             }
