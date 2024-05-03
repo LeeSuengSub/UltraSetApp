@@ -126,7 +126,8 @@
         android:layout_height="wrap_content"
         android:textFilterEnabled="true"
         android:dividerHeight="4dp"
-        tools:listitem="@layout/scan_list_item"/>
+        tools:listitem="@layout/scan_list_item"
+        android:transcriptMode="disabled"/>
 
     </LinearLayout>
 
