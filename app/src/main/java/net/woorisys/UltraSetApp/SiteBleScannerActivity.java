@@ -25,9 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import net.woorisys.UltraSetApp.Adapter.BeaconAdapter;
 import net.woorisys.UltraSetApp.Data.SiteMacAddr;
 import net.woorisys.UltraSetApp.SingletonData.BeaconSingleton;
 import net.woorisys.UltraSetApp.ble.BeaconDomain;
@@ -49,16 +52,19 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter bluetoothAdapter;
     private BeaconManager beaconManager;
-    private ListView listView;
+//    private ListView listView;
+    private RecyclerView recyclerView;
     private EditText editText;
     Button connectBtn;
     FloatingActionButton rescanBtn;
 //    Button rescanBtn;
     CheckBox checkBox50, checkBox60, checkBox70;
     String selectedLocation = null;
-    private static int SELECTED_RSSI = -50;
+    private static int SELECTED_RSSI = -70;
     //싱글톤
     private BeaconSingleton beaconSingleton = BeaconSingleton.getInstance();
+
+    private BeaconAdapter beaconAdapter;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -69,7 +75,7 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
         editText = (EditText) findViewById(R.id.editText);
         connectBtn = (Button) findViewById(R.id.connectBtn);
         rescanBtn = (FloatingActionButton) findViewById(R.id.rescanBtn);
-        listView = (ListView) findViewById(R.id.listview);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         checkBox50 = (CheckBox) findViewById(R.id.checkbox50);
         checkBox60 = (CheckBox) findViewById(R.id.checkbox60);
         checkBox70 = (CheckBox) findViewById(R.id.checkbox70);
@@ -85,10 +91,18 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
 
 
         //리스트뷰 클릭시
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent DeviceControl = new Intent(SiteBleScannerActivity.this,DeviceControlActivity.class);
+//                startActivity(DeviceControl);
+//            }
+//        });
+
+        recyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent DeviceControl = new Intent(SiteBleScannerActivity.this,DeviceControlActivity.class);
+            public void onClick(View view) {
+                Intent DeviceControl = new Intent(SiteBleScannerActivity.this, DeviceControlActivity.class);
                 startActivity(DeviceControl);
             }
         });
@@ -131,7 +145,7 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
 //                selectedLocation += ":"+editTextString1 + ":" + editTextString2;
 //                System.out.println("선택한 macAddress -------> "+selectedLocation);   //macAddressTest
 
-                for(int i = 0; i < listView.getCount(); i++){
+                for(int i = 0; i < beaconAdapter.getItemCount(); i++){
                     beaconSingleton_macAddress = beaconSingleton.getBeaconDomainList().get(i).getMacAddress();
 
                     String siteBeacon = beaconSingleton_macAddress.substring(0,beaconSingleton_macAddress.length() - 5);
@@ -206,50 +220,50 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
         }
     }
 
-    private class BeaconAdapter extends BaseAdapter {
-
-        public ArrayList<BeaconDomain> beaconArrayList = new ArrayList<BeaconDomain>();
-
-        public BeaconAdapter(ArrayList<BeaconDomain> beacon) {
-            this.beaconArrayList = beacon;
-        }
-
-        @Override
-        public int getCount(){
-            return beaconArrayList.size();
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return beaconArrayList.get(position);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_list_item, parent, false);
-
-            TextView macAddress = (TextView) convertView.findViewById(R.id.macAddress);
-            TextView serialNumber = (TextView) convertView.findViewById(R.id.serialNumber);
-
-            macAddress.setText("MacAddress : " + beaconArrayList.get(position).getMacAddress());
-            serialNumber.setText("serialNumber : "+ beaconArrayList.get(position).getSerialNumber());
-
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(SiteBleScannerActivity.this, DeviceControlActivity.class);
-                    intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, beaconSingleton.getBeaconDomainList().get(position).getMacAddress());
-                    startActivity(intent);
-                }
-            });
-            return convertView;
-        }
-    }
+//    private class BeaconAdapter extends BaseAdapter {
+//
+//        public ArrayList<BeaconDomain> beaconArrayList = new ArrayList<BeaconDomain>();
+//
+//        public BeaconAdapter(ArrayList<BeaconDomain> beacon) {
+//            this.beaconArrayList = beacon;
+//        }
+//
+//        @Override
+//        public int getCount(){
+//            return beaconArrayList.size();
+//        }
+//
+//        @Override
+//        public long getItemId(int position) {
+//            return position;
+//        }
+//
+//        @Override
+//        public Object getItem(int position) {
+//            return beaconArrayList.get(position);
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_list_item, parent, false);
+//
+//            TextView macAddress = (TextView) convertView.findViewById(R.id.macAddress);
+//            TextView serialNumber = (TextView) convertView.findViewById(R.id.serialNumber);
+//
+//            macAddress.setText("MacAddress : " + beaconArrayList.get(position).getMacAddress());
+//            serialNumber.setText("serialNumber : "+ beaconArrayList.get(position).getSerialNumber());
+//
+//            convertView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(SiteBleScannerActivity.this, DeviceControlActivity.class);
+//                    intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, beaconSingleton.getBeaconDomainList().get(position).getMacAddress());
+//                    startActivity(intent);
+//                }
+//            });
+//            return convertView;
+//        }
+//    }
 
 
     @Override
@@ -316,10 +330,6 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
                             BeaconSingleton beaconSingleton = BeaconSingleton.getInstance();
                             beaconSingleton.getBeaconDomainList().add(testBeacon);
 
-                            int firstVisiblePosition = listView.getFirstVisiblePosition();
-                            View firstVisibleItemView = listView.getChildAt(0);
-                            int topOffset = (firstVisibleItemView != null) ? firstVisibleItemView.getTop() : 0;
-
                             if (count <= 30) {
                                 beaconSingleton.getBeaconDomainList().add(new BeaconDomain(macAddress, serialNumber));
                                 ++count;
@@ -333,18 +343,19 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
                                     e.printStackTrace();
                                 }
                             }
-                            listView.setSelectionFromTop(firstVisiblePosition, topOffset);
+
+                            // 아이템 추가
+                            BeaconDomain newBeacon = new BeaconDomain(macAddress, serialNumber);
+                            beaconSingleton.getBeaconDomainList().add(newBeacon);
+
+                            // 어댑터에 아이템 추가 알림
+                            int newPosition = beaconSingleton.getBeaconDomainList().size() - 1;
+                            beaconAdapter.notifyItemInserted(newPosition);
+
 //                            BeaconAdapter beaconAdapter = new BeaconAdapter(beaconSingleton.getBeaconDomainList());
 //                            listView.setAdapter(beaconAdapter);
 //                            beaconAdapter.notifyDataSetChanged();
-
-                            BeaconAdapter beaconAdapter = new BeaconAdapter(beaconSingleton.getBeaconDomainList());
-                            listView.setAdapter(beaconAdapter);
-                            beaconAdapter.notifyDataSetChanged();
-
-                            listView.setSelectionFromTop(firstVisiblePosition, topOffset);
                         }
-//                        System.out.println("SELECTED_RSSI : " + SELECTED_RSSI);
                     }
                 }
             }

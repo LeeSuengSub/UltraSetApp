@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     //뒤로가기 두번클릭
     private final long finishtimeed = 1000;
     private long presstime = 0;
-    Button siteBtn;
+//    Button siteBtn;
     Button companyBtn;
 
     @SuppressLint("MissingPermission")
@@ -29,20 +29,20 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        siteBtn = (Button) findViewById(R.id.siteButton);
+//        siteBtn = (Button) findViewById(R.id.siteButton);
         companyBtn = (Button) findViewById(R.id.companyButton);
 
-        siteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try{
-                    Intent intent  = new Intent(MainActivity.this, SiteBleScannerActivity.class);
-                    startActivity(intent);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
+//        siteBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                try{
+//                    Intent intent  = new Intent(MainActivity.this, SiteBleScannerActivity.class);
+//                    startActivity(intent);
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
         companyBtn.setOnClickListener(new View.OnClickListener() {
             @Override

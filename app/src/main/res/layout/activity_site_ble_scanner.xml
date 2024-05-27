@@ -31,16 +31,6 @@
         android:weightSum="4"
         android:orientation="horizontal">
 
-        <!--        dropdown-->
-<!--        <Spinner-->
-<!--            android:id="@+id/comboBox"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:layout_marginLeft="10dp"-->
-<!--            android:layout_marginRight="5dp"-->
-<!--            android:spinnerMode="dialog"-->
-<!--            android:gravity="center" />-->
-
         <EditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
@@ -84,8 +74,7 @@
             android:layout_marginRight="20dp"
             android:text="50"
             android:textStyle="bold"
-            android:textSize="15sp"
-            android:checked="true"/>
+            android:textSize="15sp" />
 
         <CheckBox
             android:id="@+id/checkbox60"
@@ -102,17 +91,10 @@
             android:layout_height="wrap_content"
             android:text="70"
             android:textStyle="bold"
-            android:textSize="15sp"/>
+            android:textSize="15sp"
+            android:checked="true"/>
 
     </LinearLayout>
-
-<!--    <Button-->
-<!--        android:id="@+id/connectBtn"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="연결"-->
-<!--        android:textStyle="bold"-->
-<!--        android:textSize="20sp" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -120,14 +102,14 @@
         android:background="@color/black"
         />
 
-    <ListView
-        android:id="@+id/listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textFilterEnabled="true"
-        android:dividerHeight="4dp"
-        tools:listitem="@layout/scan_list_item"
-        android:transcriptMode="disabled"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textFilterEnabled="true"
+            android:dividerHeight="4dp"
+            tools:listitem="@layout/scan_list_item"
+            android:transcriptMode="disabled"/>
 
     </LinearLayout>
 

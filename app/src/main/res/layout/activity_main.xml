@@ -29,17 +29,17 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         >
-        <Button
-            android:id="@+id/siteButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="3dp"
-            android:onClick="clickBtn"
-            android:text="현장"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            tools:layout_editor_absoluteX="14dp" />
+<!--        <Button-->
+<!--            android:id="@+id/siteButton"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_margin="3dp"-->
+<!--            android:onClick="clickSiteBtn"-->
+<!--            android:text="현장"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textSize="20sp"-->
+<!--            tools:layout_editor_absoluteX="14dp" />-->
 
         <Button
             android:id="@+id/companyButton"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_margin="3dp"
-            android:onClick="clickBtn"
+            android:onClick="clickCompanyBtn"
             android:text="회사"
             android:textStyle="bold"
             android:textSize="20sp"

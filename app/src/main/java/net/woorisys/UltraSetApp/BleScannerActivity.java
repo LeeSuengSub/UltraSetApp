@@ -55,8 +55,8 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
     private BluetoothAdapter bluetoothAdapter;
     private BeaconManager beaconManager;
     private ListView listView;
-    private EditText editText;
-    Button connectBtn;
+    private EditText editTextCompany;
+    Button connectBtnCompany;
 //    Button rescanBtn;
     FloatingActionButton rescanBtn;
     String selectedLocation = null;
@@ -69,8 +69,8 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_scanner);
 
-//        editText = (EditText) findViewById(R.id.editText);
-//        connectBtn = (Button) findViewById(R.id.connectBtn);
+        editTextCompany = (EditText) findViewById(R.id.editTextCompany);
+        connectBtnCompany = (Button) findViewById(R.id.connectBtnCompany);
 //        rescanBtn = (Button) findViewById(R.id.rescanBtn);
         rescanBtn = (FloatingActionButton) findViewById(R.id.fab);
         listView = (ListView) findViewById(R.id.listview);
@@ -158,16 +158,15 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 startActivity(DeviceControl);
             }
         });
-/*
         //MacAddress를 입력 후 직접 연동하기
-        connectBtn.setOnClickListener(new View.OnClickListener() {
+        connectBtnCompany.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String editTextString = editText.getText().toString();
+                String editTextString = editTextCompany.getText().toString();
                 int count = 0; //list에 있는지 확인
                 String beaconSingleton_macAddress; //싱글톤에 들어있는 macAddress.
 
-                if(editText.length() <= 0){
+                if(editTextCompany.length() <= 0){
                     Toast.makeText(BleScannerActivity.this, "시리얼번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }else if(!isNumeric(editTextString)) {
@@ -185,31 +184,27 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 String editTextString1 = editTextString.substring(0,2);
                 String editTextString2 = editTextString.substring(2);
 
-                selectedLocation+= ":"+editTextString1 + ":" + editTextString2;
-                System.out.println("선택한 macAddress -------> "+selectedLocation);   //macAddressTest
+//                selectedLocation += ":"+editTextString1 + ":" + editTextString2;
+//                System.out.println("선택한 macAddress -------> "+selectedLocation);   //macAddressTest
 
                 for(int i = 0; i < listView.getCount(); i++){
                     beaconSingleton_macAddress = beaconSingleton.getBeaconDomainList().get(i).getMacAddress();
 
-                    if(selectedLocation.equals(beaconSingleton_macAddress)){
-                        ++count;
-                        System.out.println("count -->"+count);
-                    }
-                }
+                    String siteBeacon = beaconSingleton_macAddress.substring(0,beaconSingleton_macAddress.length() - 5);
 
+                    siteBeacon += editTextString1 + ":" + editTextString2;
+
+                    System.out.println("siteBeacon ==> : " + siteBeacon);
+                    ++count;
+                }
                 if(count <= 0){
                     Toast.makeText(BleScannerActivity.this, "통신이상\n현장을 확인후 다시 진행해주세요.", Toast.LENGTH_SHORT).show();
-                    spinner_field.setSelection(0);
-                }else{
-                    Intent intent = new Intent(BleScannerActivity.this, DeviceControlActivity.class);
-                    intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, selectedLocation);
-                    spinner_field.setSelection(0);
-                    startActivity(intent);
+                }else {
+                    Intent DeviceControl = new Intent(BleScannerActivity.this, DeviceControlActivity.class);
+                    startActivity(DeviceControl);
                 }
-
             }
         });
-        */
         rescanBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
