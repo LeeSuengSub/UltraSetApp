@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -30,6 +31,16 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+
+    //========
+    private final Handler mHandler = new Handler();
+    private boolean mIsConnecting = false;
+    private static final long CONNECT_TIMEOUT = 10000; // 10 seconds
+    private static final long RECONNECT_DELAY = 1000; // 1 seconds
+    private static final int MAX_RECONNECT_ATTEMPTS = 5; // Maximum number of reconnect attempts
+    private int mReconnectAttempts = 0;
+    private String mDeviceAddress;
+    //===========
 
     public static final int STATE_DISCONNECTED = 0;
     public static final int STATE_CONNECTING = 1;
@@ -50,26 +61,32 @@ public class BluetoothLeService extends Service {
         @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            String intentAction;
-            if(newState == BluetoothProfile.STATE_CONNECTED) {
-                intentAction = ACTION_GATT_CONNECTED;
+            Log.d("SS1234", "onConnectionStateChange: status=" + status + " newState=" + newState); // 수정됨
+            if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mConnectionState = STATE_CONNECTED;
+                mIsConnecting = false;
+                mReconnectAttempts = 0; // Reset reconnect attempts on successful connection
+                mHandler.removeCallbacks(mConnectTimeoutRunnable);
                 mBluetoothGatt.discoverServices();
-                broadcastUpdate(intentAction);
-                Log.d(TAG, "Connected to GATT server.");
-                Log.d(TAG, "Attempting to start service discovery: "+ mBluetoothGatt.discoverServices());
-            }else if(newState == BluetoothProfile.STATE_DISCONNECTED) {
-                intentAction = ACTION_GATT_DISCONNECTED;
+                broadcastUpdate(ACTION_GATT_CONNECTED);
+                Log.d("SS1234", "Connected to GATT server.");
+            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
-                Log.d(TAG, "Disconnected from GATT server");
-                System.out.println("intentAction : "+intentAction);
-                broadcastUpdate(intentAction);
+                mIsConnecting = false;
+                mHandler.removeCallbacks(mConnectTimeoutRunnable);
+                Log.d("SS1234", "Disconnected from GATT server");
+                broadcastUpdate(ACTION_GATT_DISCONNECTED);
+                if (mReconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                    mReconnectAttempts++;
+                    mHandler.postDelayed(mReconnectRunnable, RECONNECT_DELAY);
+                }
             }
         }
 
         @SuppressLint("MissingPermission")
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.d(TAG, "onServicesDiscovered: status=" + status);
             if(status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             }else {
@@ -77,38 +94,86 @@ public class BluetoothLeService extends Service {
             }
         }
 
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
-            super.onCharacteristicRead(gatt, characteristic, status);
-            byte[] value = characteristic.getValue();
-            Log.d(TAG,"OnCharacteristicREAD "+Arrays.toString(value));
-            characteristic.setValue(value);
+//        @Override
+//        public void onCharacteristicRead(BluetoothGatt gatt,
+//                                         BluetoothGattCharacteristic characteristic,
+//                                         int status) {
+//            super.onCharacteristicRead(gatt, characteristic, status);
+//            byte[] value = characteristic.getValue();
+//            Log.d(TAG,"OnCharacteristicREAD "+Arrays.toString(value));
+//            characteristic.setValue(value);
+//
+//            if(status == BluetoothGatt.GATT_SUCCESS) {
+//                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+//            }
+//        }
 
-            if(status == BluetoothGatt.GATT_SUCCESS) {
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.d("SS1234", "onCharacteristicRead: status=" + status + " characteristic=" + characteristic.getUuid()); // 수정됨
+            if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            } else {
+                Log.e("SS1234", "Characteristic read failed, status: " + status);
             }
         }
 
+//        @Override
+//        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+//            super.onCharacteristicWrite(gatt, characteristic, status);
+//            Log.d(TAG,"Characteristic "+characteristic.getUuid() + "written");
+//            if(status == BluetoothGatt.GATT_SUCCESS) {
+//                Log.d(TAG,"Characteristic written successfully");
+//            }else{
+//                Log.e(TAG,"Characteristic write unsuccessfully, status: "+status);
+//                disconnect();
+//            }
+//        }
+
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            super.onCharacteristicWrite(gatt, characteristic, status);
-            Log.d(TAG,"Characteristic "+characteristic.getUuid() + "written");
-            if(status == BluetoothGatt.GATT_SUCCESS) {
-                Log.d(TAG,"Characteristic written successfully");
-            }else{
-                Log.e(TAG,"Characteristic write unsuccessfully, status: "+status);
+            Log.d("SS1234", "onCharacteristicWrite: status=" + status + " characteristic=" + characteristic.getUuid()); // 수정됨
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.d("SS1234", "Characteristic written successfully");
+            } else {
+                Log.e("SS1234", "Characteristic write unsuccessfully, status: " + status);
                 disconnect();
             }
         }
 
+//        @Override
+//        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic){
+//            super.onCharacteristicChanged(gatt,characteristic);
+//            Log.d(TAG,"characteristic changed: "+characteristic.getUuid().toString());
+//            readCharacteristic(characteristic);
+//            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+//        }
+
         @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic){
-            super.onCharacteristicChanged(gatt,characteristic);
-            Log.d(TAG,"characteristic changed: "+characteristic.getUuid().toString());
-            readCharacteristic(characteristic);
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            Log.d("SS1234", "onCharacteristicChanged: characteristic=" + characteristic.getUuid()); // 수정됨
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+        }
+    };
+
+    private final Runnable mConnectTimeoutRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mIsConnecting) {
+                Log.d("SS1234", "Connection timeout");
+                disconnect();
+                if (mReconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                    mReconnectAttempts++;
+                    mHandler.postDelayed(mReconnectRunnable, RECONNECT_DELAY);
+                }
+            }
+        }
+    };
+
+    private final Runnable mReconnectRunnable = new Runnable() {
+        @Override
+        public void run() {
+            connect(mDeviceAddress); // Restart connection attempt
         }
     };
 
@@ -186,51 +251,112 @@ public class BluetoothLeService extends Service {
         return true;
     }
 
+//    @SuppressLint("MissingPermission")
+//    public boolean connect(final String address) {
+//        if(mBluetoothAdapter == null || address == null) {
+//            Log.d(TAG, "BluetoothAdapter not initialized or unspecified address.");
+//            return false;
+//        }
+//
+//        mDeviceAddress = address;
+//
+//        if(mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
+//                && mBluetoothGatt != null) {
+//            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+//            if(mBluetoothGatt.connect()) {
+//                mConnectionState = STATE_CONNECTING;
+//                return true;
+//            }else {
+//                return false;
+//            }
+//        }
+//
+//        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+//
+//        if(device == null) {
+//            Log.d(TAG,"Device not found.  unable to connect.");
+//            return false;
+//        }
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            mBluetoothGatt = device.connectGatt(this, false, mGattCallback, BluetoothDevice.TRANSPORT_LE);
+//        }
+//        else {
+//            mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+//        }
+//
+//        Log.d(TAG, "Trying to create a new connection.");
+//        mBluetoothDeviceAddress = address;
+//        mConnectionState = STATE_CONNECTING;
+//        return true;
+//    }
+
     @SuppressLint("MissingPermission")
     public boolean connect(final String address) {
-        if(mBluetoothAdapter == null || address == null) {
-            Log.d(TAG, "BluetoothAdapter not initialized or unspecified address.");
+        if (mBluetoothAdapter == null || address == null) {
+            Log.d("SS1234", "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
 
-        if(mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
-                && mBluetoothGatt != null) {
-            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-            if(mBluetoothGatt.connect()) {
-                mConnectionState = STATE_CONNECTING;
-                return true;
-            }else {
-                return false;
+        mDeviceAddress = address;
+
+        if (mBluetoothGatt != null) {
+            Log.d("SS1234", "Trying to use an existing mBluetoothGatt for connection.");
+            if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)) {
+                if (mBluetoothGatt.connect()) {
+                    mConnectionState = STATE_CONNECTING;
+                    mIsConnecting = true; // 수정됨
+                    mHandler.postDelayed(mConnectTimeoutRunnable, CONNECT_TIMEOUT);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                Log.d("SS1234", "Closing existing connection before creating a new one.");
+                mBluetoothGatt.disconnect();
+                mBluetoothGatt.close();
+                mBluetoothGatt = null; // 수정됨
             }
         }
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-
-        if(device == null) {
-            Log.d(TAG,"Device not found.  unable to connect.");
+        if (device == null) {
+            Log.d("SS1234", "Device not found. Unable to connect.");
             return false;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mBluetoothGatt = device.connectGatt(this, false, mGattCallback, BluetoothDevice.TRANSPORT_LE);
-        }
-        else {
+        } else {
             mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         }
 
-        Log.d(TAG, "Trying to create a new connection.");
+        Log.d("SS1234", "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
+        mIsConnecting = true; // 수정됨
+        mHandler.postDelayed(mConnectTimeoutRunnable, CONNECT_TIMEOUT);
         return true;
     }
 
+//    @SuppressLint("MissingPermission")
+//    public void disconnect() {
+//        if(mBluetoothAdapter == null || mBluetoothGatt == null) {
+//            Log.d(TAG, "BluetoothAdapter not initialized");
+//            return;
+//        }
+//
+//        mBluetoothGatt.disconnect();
+//    }
+
     @SuppressLint("MissingPermission")
     public void disconnect() {
-        if(mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.d(TAG, "BluetoothAdapter not initialized");
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.d("SS1234", "BluetoothAdapter not initialized");
             return;
         }
 
+        Log.d("SS1234", "Disconnecting...");
         mBluetoothGatt.disconnect();
     }
 
@@ -243,32 +369,62 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt =  null;
     }
 
+//    @SuppressLint("MissingPermission")
+//    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
+//        if(mBluetoothAdapter == null || mBluetoothGatt == null) {
+//            Log.d(TAG,"BluetoothAdapter not initialized");
+//            return;
+//        }
+//        boolean status;
+//        status = mBluetoothGatt.readCharacteristic(characteristic);
+//
+//        Log.d(TAG,"status : "+status);
+//        mBluetoothGatt.readCharacteristic(characteristic);
+//    }
+
     @SuppressLint("MissingPermission")
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if(mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.d(TAG,"BluetoothAdapter not initialized");
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.d("SS1234", "BluetoothAdapter not initialized");
             return;
         }
-        boolean status;
-        status = mBluetoothGatt.readCharacteristic(characteristic);
-
-        Log.d(TAG,"status : "+status);
-        mBluetoothGatt.readCharacteristic(characteristic);
+        boolean status = mBluetoothGatt.readCharacteristic(characteristic);
+        Log.d("SS1234", "Reading characteristic, status: " + status);
     }
 
+//    @SuppressLint("MissingPermission")
+//    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
+//                                              boolean enabled) {
+//        if(mBluetoothAdapter == null || mBluetoothGatt == null) {
+//            Log.d(TAG, "BluetoothAdapter not initialized");
+//            return;
+//        }
+//
+//        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+//            Log.d(TAG, "characteristic : "+ characteristic.getUuid());
+//        if(SampleGattAttributes.WOORI_NOTI_UUID.equals(characteristic.getUuid().toString()) || SampleGattAttributes.WOORI_NOTI_UUID == characteristic.getUuid().toString()) {
+//            for(BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+//                if(descriptor != null) {
+//                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+//                    mBluetoothGatt.writeDescriptor(descriptor);
+//                    writeDescriptor(descriptor);
+//                }
+//            }
+//        }
+//    }
+
     @SuppressLint("MissingPermission")
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
-        if(mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.d(TAG, "BluetoothAdapter not initialized");
+    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.d("SS1234", "BluetoothAdapter not initialized");
             return;
         }
 
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-            Log.d(TAG, "characteristic : "+ characteristic.getUuid());
-        if(SampleGattAttributes.WOORI_NOTI_UUID.equals(characteristic.getUuid().toString()) || SampleGattAttributes.WOORI_NOTI_UUID == characteristic.getUuid().toString()) {
-            for(BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-                if(descriptor != null) {
+        Log.d("SS1234", "Setting characteristic notification: " + characteristic.getUuid());
+        if (SampleGattAttributes.WOORI_NOTI_UUID.equals(characteristic.getUuid())) {
+            for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+                if (descriptor != null) {
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothGatt.writeDescriptor(descriptor);
                     writeDescriptor(descriptor);

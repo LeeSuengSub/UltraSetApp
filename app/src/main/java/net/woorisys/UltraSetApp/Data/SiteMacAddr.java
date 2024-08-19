@@ -21,7 +21,8 @@ public enum SiteMacAddr {
     DONGSHINCHOEN("27:14:01:02"),
     SM7("28:18:51:06"),
     PRIMO("46:23:01:04"),
-    BAYCENT("46:23:01:01");
+    BAYCENT("46:23:01:01"),
+    YONGMOON1("41:37:01:16");
 
     private final String addr;
 

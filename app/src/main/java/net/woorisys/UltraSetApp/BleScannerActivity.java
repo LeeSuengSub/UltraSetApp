@@ -98,48 +98,9 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
         spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(comboArray[position].equals("동탄")) {
-                    selectedLocation = SiteMacAddr.DONGTAN.addr();
-                }else if(comboArray[position].equals("F19")) {
-                    selectedLocation = SiteMacAddr.F19.addr();
-                }else if(comboArray[position].equals("문흥")) {
-                    selectedLocation = SiteMacAddr.MUNHUENG.addr();
-                }else if(comboArray[position].equals("둔촌")) {
-                    selectedLocation = SiteMacAddr.DUNCHON.addr();
-                }else if(comboArray[position].equals("온천")) {
-                    selectedLocation = SiteMacAddr.ONCHUN.addr();
-                }else if(comboArray[position].equals("지산")) {
-                    selectedLocation = SiteMacAddr.JISAN.addr();
-                }else if(comboArray[position].equals("오포2")) {
-                    selectedLocation = SiteMacAddr.OPPO2.addr();
-                } else if (comboArray[position].equals("노형")) {
-                    selectedLocation = SiteMacAddr.NOHYEONG.addr();
-                } else if (comboArray[position].equals("연동")) {
-                    selectedLocation = SiteMacAddr.YEON.addr();
-                } else if (comboArray[position].equals("배방")) {
-                    selectedLocation = SiteMacAddr.BAEBANG.addr();
-                }else if (comboArray[position].equals("수성")) {
-                    selectedLocation = SiteMacAddr.SOOSUNG.addr();
-                }else if (comboArray[position].equals("오산")) {
-                    selectedLocation = SiteMacAddr.OSAN.addr();
-                }else if (comboArray[position].equals("거제")) {
-                    selectedLocation = SiteMacAddr.GEOJE.addr();
-                }else if (comboArray[position].equals("양평")) {
-                    selectedLocation = SiteMacAddr.YANGPYEONG.addr();
-                }else if (comboArray[position].equals("천안")) {
-                    selectedLocation = SiteMacAddr.CHEONAN.addr();
-                }else if (comboArray[position].equals("청주")) {
-                    selectedLocation = SiteMacAddr.CHEONGJU.addr();
-                }else if (comboArray[position].equals("하남")) {
-                    selectedLocation = SiteMacAddr.HANAM.addr();
-                }else if (comboArray[position].equals("동신천")) {
-                    selectedLocation = SiteMacAddr.DONGSHINCHOEN.addr();
-                }else if (comboArray[position].equals("SM7")) {
-                    selectedLocation = SiteMacAddr.SM7.addr();
-                }else if(comboArray[position].equals("프리모")) {
-                    selectedLocation = SiteMacAddr.PRIMO.addr();
-                } else if (comboArray[position].equals("베이센트")) {
-                    selectedLocation = SiteMacAddr.BAYCENT.addr();
+
+                if(comboArray[position].equals("용문 1단지")) {
+                    selectedLocation = SiteMacAddr.YONGMOON1.addr();
                 }
             }
             @Override

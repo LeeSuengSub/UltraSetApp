@@ -357,7 +357,7 @@ public class DeviceControlActivity extends AppCompatActivity {
             } else if(BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 Log.d(TAG,"Disconnected");
                 mConnected = false;
-                mConnectionState.setText("연결 실패");
+                mConnectionState.setText("연결 실패 | 다시 연결 시도중.");
                 invalidateOptionsMenu();
                 clearUI();
             } else if(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
