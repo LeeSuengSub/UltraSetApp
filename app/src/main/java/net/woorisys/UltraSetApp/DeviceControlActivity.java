@@ -199,8 +199,11 @@ public class DeviceControlActivity extends AppCompatActivity {
                 String mDataFieldSubString1 = mDataFieldText.substring(5,8);
                 int mDataFieldSettingHeight = Integer.parseInt(mDataFieldSubString1,16);
 
-                String mDataFieldSubString2 = mDataFieldText.substring(11,14);
+                String mDataFieldSubString2 = mDataFieldText.substring(10,14);
                 int mDataFieldMeasurementHeight = Integer.parseInt(mDataFieldSubString2,16);
+
+                Log.d("SS1234", "mDataFieldSubString2 : "+mDataFieldSubString2);
+                Log.d("SS1234", "Height : "+mDataFieldMeasurementHeight);
 
                 String mDataFieldSubString3 = mDataFieldText.substring(9,10);
                 int mDataFieldState = Integer.parseInt(mDataFieldSubString3,16);
@@ -357,7 +360,7 @@ public class DeviceControlActivity extends AppCompatActivity {
             } else if(BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 Log.d(TAG,"Disconnected");
                 mConnected = false;
-                mConnectionState.setText("연결 실패");
+                mConnectionState.setText("연결 실패 | 다시 연결 시도중.");
                 invalidateOptionsMenu();
                 clearUI();
             } else if(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -494,7 +497,7 @@ public class DeviceControlActivity extends AppCompatActivity {
         }
         return data;
     }
-    
+
     // 숫자 정규표현식
     public boolean isNumeric(String str) {
         return Pattern.matches("^[0-9]*$", str);
