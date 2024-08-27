@@ -199,8 +199,11 @@ public class DeviceControlActivity extends AppCompatActivity {
                 String mDataFieldSubString1 = mDataFieldText.substring(5,8);
                 int mDataFieldSettingHeight = Integer.parseInt(mDataFieldSubString1,16);
 
-                String mDataFieldSubString2 = mDataFieldText.substring(11,14);
+                String mDataFieldSubString2 = mDataFieldText.substring(10,14);
                 int mDataFieldMeasurementHeight = Integer.parseInt(mDataFieldSubString2,16);
+
+                Log.d("SS1234", "mDataFieldSubString2 : "+mDataFieldSubString2);
+                Log.d("SS1234", "Height : "+mDataFieldMeasurementHeight);
 
                 String mDataFieldSubString3 = mDataFieldText.substring(9,10);
                 int mDataFieldState = Integer.parseInt(mDataFieldSubString3,16);
