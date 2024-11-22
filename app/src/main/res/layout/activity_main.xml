@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:layout_margin="3dp"
             android:onClick="clickCompanyBtn"
-            android:text="회사"
+            android:text="스캔 시작"
             android:textStyle="bold"
             android:textSize="20sp"
             tools:layout_editor_absoluteX="14dp" />

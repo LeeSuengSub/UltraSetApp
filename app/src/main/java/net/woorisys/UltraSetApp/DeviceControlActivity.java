@@ -59,6 +59,7 @@ public class DeviceControlActivity extends AppCompatActivity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
 
+    private Button marginButton;
     private Button writeButton;
     private Button readButton;
     private Button commonButton;
@@ -66,6 +67,7 @@ public class DeviceControlActivity extends AppCompatActivity {
     private Button yellowButton;
     private Button cyanButton;
     private Button pinkButton;
+
 
     private final String LIST_UUID = "UUID";
     private final String LIST_MAC_ADDRESS = "MAC_ADDRESS";
@@ -96,6 +98,7 @@ public class DeviceControlActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_control);
 
+        marginButton = findViewById(R.id.marginButton);
         writeButton = findViewById(R.id.writeButton);
         readButton = findViewById(R.id.readButton);
         commonButton = findViewById(R.id.commonButton);
@@ -110,7 +113,9 @@ public class DeviceControlActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
-        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
+        String macAddress = intent.getExtras().getString("DEVICE_ADDRESS");
+
+        ((TextView) findViewById(R.id.device_address)).setText(macAddress);
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListener);
         mDataField = (TextView) findViewById(R.id.device_data);
@@ -199,14 +204,25 @@ public class DeviceControlActivity extends AppCompatActivity {
                 String mDataFieldSubString1 = mDataFieldText.substring(5,8);
                 int mDataFieldSettingHeight = Integer.parseInt(mDataFieldSubString1,16);
 
+                String mDataFieldSubString3 = mDataFieldText.substring(9,10);
+                int mDataFieldState = Integer.parseInt(mDataFieldSubString3,16);
+
                 String mDataFieldSubString2 = mDataFieldText.substring(10,14);
                 int mDataFieldMeasurementHeight = Integer.parseInt(mDataFieldSubString2,16);
 
-                Log.d("SS1234", "mDataFieldSubString2 : "+mDataFieldSubString2);
-                Log.d("SS1234", "Height : "+mDataFieldMeasurementHeight);
+                String marginSizeSubString = null;
+                int marginSizeInteger = 0;
 
-                String mDataFieldSubString3 = mDataFieldText.substring(9,10);
-                int mDataFieldState = Integer.parseInt(mDataFieldSubString3,16);
+                try{
+                    marginSizeSubString = mDataFieldText.substring(18,22);
+                    marginSizeInteger = Integer.parseInt(marginSizeSubString,16);
+                }catch (Exception e){
+
+                }
+
+                Log.d("SS1234", "mDataFieldSubString2 : " + mDataFieldSubString2);
+                Log.d("SS1234", "Height : " + mDataFieldMeasurementHeight);
+                Log.d("SS1234", "margin : " + marginSizeInteger);
 
                 String State = null;
                 if(mDataFieldState == 0){
@@ -221,7 +237,12 @@ public class DeviceControlActivity extends AppCompatActivity {
                     State = "Cyan";
                 }
 
-                builder.setMessage("설정높이 : "+mDataFieldSettingHeight+"\n측정높이 : "+mDataFieldMeasurementHeight +"\n상태 : "+State);
+                if(marginSizeInteger != 0) {
+                    builder.setMessage("설정높이 : "+mDataFieldSettingHeight+"\n측정높이 : "+mDataFieldMeasurementHeight +"\nmargin : " + marginSizeInteger +"\n상태 : "+State);
+                }
+                else {
+                    builder.setMessage("설정높이 : "+mDataFieldSettingHeight+"\n측정높이 : "+mDataFieldMeasurementHeight +"\n상태 : "+State);
+                }
 
                 builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
@@ -311,6 +332,90 @@ public class DeviceControlActivity extends AppCompatActivity {
                 });
 
                 AlertDialog dialog = writeBuilder.create();
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+            }
+        });
+
+        /*
+        * maring값 설정.
+        * */
+        AlertDialog.Builder marginBuilder = new AlertDialog.Builder(DeviceControlActivity.this);
+
+        marginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mDataField.length() <= 0){
+                    Toast.makeText(mBluetoothLeService, "read한 다음 시도해주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                marginBuilder.setTitle("마진 값 세팅");
+                marginBuilder.setMessage("세팅 가능한 범위 : 1000 ~ 4000");
+
+                LayoutInflater inflater = getLayoutInflater();
+                View readView = inflater.inflate(R.layout.write_dialog, null);
+
+                marginBuilder.setView(readView);
+
+                marginBuilder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String start = "AA";
+                        String road = "03";
+                        String end = "AB";
+
+                        EditText heightSet = (EditText)((AlertDialog)dialog).findViewById(R.id.heightSet);
+
+                        String dialogEdit = heightSet.getText().toString();
+
+                        //내용을 적지 않으면 return;
+                        if(dialogEdit.length() <= 0){
+                            return;
+                        }
+
+                        // 정규표현식 숫자만!
+                        if(!isNumeric(dialogEdit)){
+                            Toast.makeText(mBluetoothLeService, "숫자만 입력해주세요.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        int dialogEditInt = Integer.parseInt(dialogEdit);
+
+                        String heightEditHex = Integer.toHexString(dialogEditInt);
+                        while(heightEditHex.length() < 4) {
+                            heightEditHex = "0"+heightEditHex;
+                        }
+
+                        String heightEditHexHeightHigh = heightEditHex.substring(0,2);
+                        String heightEditHexHeightLow = heightEditHex.substring(2);
+
+                        int startInt = Integer.parseInt(start,16);
+                        int roadInt = Integer.parseInt(road,16);
+                        int heightHigh = Integer.parseInt(heightEditHexHeightHigh,16);
+                        int heightLow = Integer.parseInt(heightEditHexHeightLow,16);
+
+                        int HexSum = startInt+roadInt+heightHigh+heightLow;
+                        String writeSumHex = Integer.toHexString(HexSum);
+
+                        if(writeSumHex.length() > 2) {
+                            writeSumHex = writeSumHex.substring(1);
+                        }
+
+                        String hexSetting = (start+road+heightEditHex+writeSumHex+end).toUpperCase(Locale.ROOT);
+
+                        byte[] data = hexStringToByteArray(hexSetting);
+                        mBluetoothLeService.writeCharacteristic(mNotifyCharacteristic,data);
+                    }
+                });
+                marginBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                AlertDialog dialog = marginBuilder.create();
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
             }

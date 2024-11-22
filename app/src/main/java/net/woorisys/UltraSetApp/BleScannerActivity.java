@@ -1,35 +1,30 @@
 package net.woorisys.UltraSetApp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.RemoteException;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import net.woorisys.UltraSetApp.Data.SiteMacAddr;
+import net.woorisys.UltraSetApp.Adapter.BeaconAdapter;
 import net.woorisys.UltraSetApp.SingletonData.BeaconSingleton;
 import net.woorisys.UltraSetApp.ble.BeaconDomain;
 
@@ -40,13 +35,8 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 public class BleScannerActivity extends AppCompatActivity implements BeaconConsumer {
@@ -56,12 +46,14 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
     private BeaconManager beaconManager;
     private ListView listView;
     private EditText editTextCompany;
-    Button connectBtnCompany;
-//    Button rescanBtn;
+    Button connectBtnCompany, startScanBtn, stopScanBtn;
     FloatingActionButton rescanBtn;
+    TextView scanState;
+
     String selectedLocation = null;
-    //싱글톤
     private BeaconSingleton beaconSingleton = BeaconSingleton.getInstance();
+    private boolean isScanning = true;
+    private RangeNotifier rangeNotifier;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -69,95 +61,62 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_scanner);
 
-        editTextCompany = (EditText) findViewById(R.id.editTextCompany);
-        connectBtnCompany = (Button) findViewById(R.id.connectBtnCompany);
-//        rescanBtn = (Button) findViewById(R.id.rescanBtn);
-        rescanBtn = (FloatingActionButton) findViewById(R.id.fab);
-        listView = (ListView) findViewById(R.id.listview);
+        editTextCompany = findViewById(R.id.editTextCompany);
+        connectBtnCompany = findViewById(R.id.connectBtnCompany);
+        rescanBtn = findViewById(R.id.fab);
+        listView = findViewById(R.id.listview);
+        startScanBtn = findViewById(R.id.startScanBtn);  // 스캔 시작 버튼
+        stopScanBtn = findViewById(R.id.stopScanBtn);    // 스캔 중지 버튼
+        scanState = findViewById(R.id.scanState);
+
+
+        if(isScanning) {
+            scanState.setText("Start");
+        } else {
+            scanState.setText("Stop");
+        }
+
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-
-        if(bluetoothManager != null) {
+        if (bluetoothManager != null) {
             bluetoothAdapter = bluetoothManager.getAdapter();
         }
+
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         beaconManager.bind(this);
 
-        //Spinner(ComboBox)
-//        Spinner spinner_field = (Spinner) findViewById(R.id.comboBox);
-
-        String[] comboArray = getResources().getStringArray(R.array.spinnerArray);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, comboArray);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner_field.setAdapter(adapter);
-//        spinner_field.setPrompt("현장");
-
-        /*
-        spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        startScanBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(comboArray[position].equals("동탄")) {
-                    selectedLocation = SiteMacAddr.DONGTAN.addr();
-                }else if(comboArray[position].equals("F19")) {
-                    selectedLocation = SiteMacAddr.F19.addr();
-                }else if(comboArray[position].equals("문흥")) {
-                    selectedLocation = SiteMacAddr.MUNHUENG.addr();
-                }else if(comboArray[position].equals("둔촌")) {
-                    selectedLocation = SiteMacAddr.DUNCHON.addr();
-                }else if(comboArray[position].equals("온천")) {
-                    selectedLocation = SiteMacAddr.ONCHUN.addr();
-                }else if(comboArray[position].equals("지산")) {
-                    selectedLocation = SiteMacAddr.JISAN.addr();
-                }else if(comboArray[position].equals("오포2")) {
-                    selectedLocation = SiteMacAddr.OPPO2.addr();
-                } else if (comboArray[position].equals("노형")) {
-                    selectedLocation = SiteMacAddr.NOHYEONG.addr();
-                } else if (comboArray[position].equals("연동")) {
-                    selectedLocation = SiteMacAddr.YEON.addr();
-                } else if (comboArray[position].equals("배방")) {
-                    selectedLocation = SiteMacAddr.BAEBANG.addr();
-                }else if (comboArray[position].equals("수성")) {
-                    selectedLocation = SiteMacAddr.SOOSUNG.addr();
-                }else if (comboArray[position].equals("오산")) {
-                    selectedLocation = SiteMacAddr.OSAN.addr();
-                }else if (comboArray[position].equals("거제")) {
-                    selectedLocation = SiteMacAddr.GEOJE.addr();
-                }else if (comboArray[position].equals("양평")) {
-                    selectedLocation = SiteMacAddr.YANGPYEONG.addr();
-                }else if (comboArray[position].equals("천안")) {
-                    selectedLocation = SiteMacAddr.CHEONAN.addr();
-                }else if (comboArray[position].equals("청주")) {
-                    selectedLocation = SiteMacAddr.CHEONGJU.addr();
-                }else if (comboArray[position].equals("하남")) {
-                    selectedLocation = SiteMacAddr.HANAM.addr();
-                }else if (comboArray[position].equals("동신천")) {
-                    selectedLocation = SiteMacAddr.DONGSHINCHOEN.addr();
-                }else if (comboArray[position].equals("SM7")) {
-                    selectedLocation = SiteMacAddr.SM7.addr();
-                }else if(comboArray[position].equals("프리모")) {
-                    selectedLocation = SiteMacAddr.PRIMO.addr();
-                } else if (comboArray[position].equals("베이센트")) {
-                    selectedLocation = SiteMacAddr.BAYCENT.addr();
+            public void onClick(View v) {
+                if (!isScanning) {
+                    startBeaconScanning();
+                    isScanning = true;
+                    scanState.setText("Start");
+                    Toast.makeText(BleScannerActivity.this, "스캔을 시작합니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(BleScannerActivity.this, "이미 스캔 중입니다.", Toast.LENGTH_SHORT).show();
                 }
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        });
 
+        stopScanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isScanning) {
+                    stopBeaconScanning();
+                    isScanning = false;
+                    scanState.setText("Stop");
+                    Toast.makeText(BleScannerActivity.this, "스캔을 중지합니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(BleScannerActivity.this, "스캔이 이미 중지되어 있습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-         */
+        // MacAddress를 입력 후 직접 연동하기 버튼 등 기존 코드...
+        // rescanBtn 클릭 이벤트 등 기존 코드...
 
-        //리스트뷰 클릭시
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent DeviceControl = new Intent(BleScannerActivity.this,DeviceControlActivity.class);
-                startActivity(DeviceControl);
-            }
-        });
         //MacAddress를 입력 후 직접 연동하기
         connectBtnCompany.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,6 +124,7 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                 String editTextString = editTextCompany.getText().toString();
                 int count = 0; //list에 있는지 확인
                 String beaconSingleton_macAddress; //싱글톤에 들어있는 macAddress.
+                String beaconMacAddress ="";
 
                 if(editTextCompany.length() <= 0){
                     Toast.makeText(BleScannerActivity.this, "시리얼번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -195,185 +155,160 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
                     siteBeacon += editTextString1 + ":" + editTextString2;
 
                     System.out.println("siteBeacon ==> : " + siteBeacon);
+                    beaconMacAddress = siteBeacon;
                     ++count;
                 }
                 if(count <= 0){
                     Toast.makeText(BleScannerActivity.this, "통신이상\n현장을 확인후 다시 진행해주세요.", Toast.LENGTH_SHORT).show();
                 }else {
                     Intent DeviceControl = new Intent(BleScannerActivity.this, DeviceControlActivity.class);
+                    DeviceControl.putExtra("DEVICE_ADDRESS", beaconMacAddress);
                     startActivity(DeviceControl);
                 }
             }
         });
+
+        //리스트뷰 클릭시
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent DeviceControl = new Intent(BleScannerActivity.this,DeviceControlActivity.class);
+
+                BeaconDomain selectedBeacon = (BeaconDomain) parent.getItemAtPosition(position);
+                String macAddress = selectedBeacon.getMacAddress();
+
+                DeviceControl.putExtra("DEVICE_ADDRESS", macAddress);
+
+                startActivity(DeviceControl);
+            }
+        });
+
         rescanBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-                beaconSingleton.resetBeaconDomainList(); //2023-02-15
-                startActivity(getIntent());
+                // BeaconSingleton의 비콘 리스트 초기화
+                beaconSingleton.resetBeaconDomainList(); // 비콘 데이터 초기화 (기존 코드 유지)
+
+                // 어댑터에 빈 리스트를 전달하여 리스트뷰 초기화
+                BeaconAdapter beaconAdapter = new BeaconAdapter(BleScannerActivity.this, beaconSingleton.getBeaconDomainList());
+                listView.setAdapter(beaconAdapter);
+                beaconAdapter.notifyDataSetChanged();  // 어댑터 갱신하여 리스트 초기화 반영
             }
         });
 
     }
 
+    // 비콘 스캔 시작 메소드
+    private void startBeaconScanning() {
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 비콘 스캔 중지 메소드
+    private void stopBeaconScanning() {
+        try {
+            beaconManager.stopRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+            Log.d("BleScannerActivity", "Scanning stopped.");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         beaconManager.unbind(this);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            finish();
-            return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @SuppressLint("MissingPermission")
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if(!bluetoothAdapter.isEnabled()) {
-            if(bluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            }
-        }
-    }
-
-    private class BeaconAdapter extends BaseAdapter {
-
-        public ArrayList<BeaconDomain> beaconArrayList = new ArrayList<BeaconDomain>();
-
-        public BeaconAdapter(ArrayList<BeaconDomain> beacon) {
-            this.beaconArrayList = beacon;
-        }
-
-        @Override
-        public int getCount(){
-            return beaconArrayList.size();
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return beaconArrayList.get(position);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_list_item, parent, false);
-
-            TextView macAddress = (TextView) convertView.findViewById(R.id.macAddress);
-            TextView serialNumber = (TextView) convertView.findViewById(R.id.serialNumber);
-
-            macAddress.setText("MacAddress : " + beaconArrayList.get(position).getMacAddress());
-            serialNumber.setText("serialNumber : "+ beaconArrayList.get(position).getSerialNumber());
-
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(BleScannerActivity.this, DeviceControlActivity.class);
-                    intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, beaconSingleton.getBeaconDomainList().get(position).getMacAddress());
-                    startActivity(intent);
-                }
-            });
-            return convertView;
-        }
-    }
-
-
-    @Override
     public void onBeaconServiceConnect() {
-        RangeNotifier rangeNotifier = new RangeNotifier() {
+        // 이전에 추가된 RangeNotifier 제거
+        beaconManager.removeRangeNotifier(rangeNotifier);
+
+        // 새로운 RangeNotifier 정의
+        rangeNotifier = new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                // [비콘이 감지되면 해당 함수가 호출]
-                // TODO [비콘들에 대응하는 Region 객체가 들어옴]
-
-                int count = 0;
                 if (beacons.size() > 0) {
                     for (Beacon beacon : beacons) {
-//                        System.out.println("beacon : " + beacon.getBluetoothAddress() + " rssi : " + beacon.getRssi());
-
                         String macAddress = beacon.getBluetoothAddress();
                         String[] macArray = macAddress.split(":");
-
-//                        String macArrayString = macArray[4]+macArray[5]; //2023-02-10 (test코드) String으로 전부 더한 다음 정수로 변환(String -> hex -> int)
 
                         int num1 = 0;
                         int num2 = 0;
 
-                        try{
-
+                        try {
                             num1 = Integer.parseInt(macArray[4]);
                             num2 = Integer.parseInt(macArray[5]);
-
-//                            System.out.println("try -> : "+ Integer.parseInt(macArrayString, 16)); //2023-02-10에 추가 (test코드)
-
-                        }catch (NumberFormatException e){
-
+                        } catch (NumberFormatException e) {
                             num1 = Integer.parseInt(macArray[4], 16);
                             num2 = Integer.parseInt(macArray[5], 16);
-
-//                            System.out.println("catch -> : "+ Integer.parseInt(macArrayString, 16)); //2023-02-10에 추가 (test코드)
-
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
                         int serialNumber = (num1 * 100) + num2;
 
-//                        System.out.println("serialNumber : => "+serialNumber);
-
-                        if (beacon.getRssi() >= -70) { //-60 <- 너무 낮아서 리스트에 출력이 되지 않음.
+                        if (beacon.getRssi() >= -70) {
                             if (beaconSingleton.getBeaconDomainList().isEmpty()) {
                                 beaconSingleton.getBeaconDomainList().add(new BeaconDomain(macAddress, serialNumber));
-                                ++count;
                             }
-                            //리스트 중복 체크
+
                             for (Iterator<BeaconDomain> iterator = beaconSingleton.getBeaconDomainList().iterator(); iterator.hasNext(); ) {
                                 BeaconDomain beaconDomain = iterator.next();
-
                                 if (beacon.getBluetoothAddress().equals(beaconDomain.getMacAddress())) {
                                     iterator.remove();
                                 }
                             }
 
-                            if (count <= 30) {
+                            if (beaconSingleton.getBeaconDomainList().size() < 30) {
                                 beaconSingleton.getBeaconDomainList().add(new BeaconDomain(macAddress, serialNumber));
-                                ++count;
                             }
 
-                            if(count >= 25) {
-                                try {
-                                    beaconManager.stopMonitoringBeaconsInRegion(region);
-                                    beaconManager.stopRangingBeaconsInRegion(region);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
+                            // UI 업데이트를 UI 스레드에서 실행
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    BeaconAdapter beaconAdapter = new BeaconAdapter(BleScannerActivity.this, beaconSingleton.getBeaconDomainList());
+                                    listView.setAdapter(beaconAdapter);
+                                    beaconAdapter.notifyDataSetChanged();
                                 }
-                            }
-
-                            BeaconAdapter beaconAdapter = new BeaconAdapter(beaconSingleton.getBeaconDomainList());
-                            listView.setAdapter(beaconAdapter);
-                            beaconAdapter.notifyDataSetChanged();
+                            });
                         }
                     }
                 }
             }
         };
+
+        // RangeNotifier를 추가하고 비콘 스캔 시작
+        beaconManager.addRangeNotifier(rangeNotifier);
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-            beaconManager.addRangeNotifier(rangeNotifier);
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
     }
 
@@ -381,5 +316,4 @@ public class BleScannerActivity extends AppCompatActivity implements BeaconConsu
     public boolean isNumeric(String str) {
         return Pattern.matches("^[0-9]*$", str);
     }
-
 }

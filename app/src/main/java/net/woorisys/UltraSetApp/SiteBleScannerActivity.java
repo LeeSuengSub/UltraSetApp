@@ -145,7 +145,7 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
 //                selectedLocation += ":"+editTextString1 + ":" + editTextString2;
 //                System.out.println("선택한 macAddress -------> "+selectedLocation);   //macAddressTest
 
-                for(int i = 0; i < beaconAdapter.getItemCount(); i++){
+                for(int i = 0; i < beaconAdapter.getCount(); i++){
                     beaconSingleton_macAddress = beaconSingleton.getBeaconDomainList().get(i).getMacAddress();
 
                     String siteBeacon = beaconSingleton_macAddress.substring(0,beaconSingleton_macAddress.length() - 5);
@@ -275,6 +275,7 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
                 // TODO [비콘들에 대응하는 Region 객체가 들어옴]
 
                 int count = 0;
+                /*
                 if (beacons.size() > 0) {
                     for (Beacon beacon : beacons) {
 //                        System.out.println("beacon : " + beacon.getBluetoothAddress() + " rssi : " + beacon.getRssi());
@@ -349,8 +350,8 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
                             beaconSingleton.getBeaconDomainList().add(newBeacon);
 
                             // 어댑터에 아이템 추가 알림
-                            int newPosition = beaconSingleton.getBeaconDomainList().size() - 1;
-                            beaconAdapter.notifyItemInserted(newPosition);
+//                            int newPosition = beaconSingleton.getBeaconDomainList().size() - 1;
+//                            beaconAdapter.notifyItemInserted(newPosition);
 
 //                            BeaconAdapter beaconAdapter = new BeaconAdapter(beaconSingleton.getBeaconDomainList());
 //                            listView.setAdapter(beaconAdapter);
@@ -358,6 +359,7 @@ public class SiteBleScannerActivity extends AppCompatActivity implements BeaconC
                         }
                     }
                 }
+                */
             }
         };
         try {
