@@ -99,8 +99,10 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="READ"
-            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
+            android:background="@drawable/border_button"
             android:gravity="center"/>
 
 
@@ -112,8 +114,10 @@
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:text="거리"
-            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
+            android:background="@drawable/border_button"
             android:gravity="center"/>
 
 
@@ -124,8 +128,10 @@
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:text="마진"
-            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
+            android:background="@drawable/border_button"
             android:gravity="center"/>
     </LinearLayout>
 
@@ -143,7 +149,8 @@
             android:layout_weight="1"
             android:layout_marginLeft="5dp"
             android:text="일반"
-            android:textSize="12sp"
+            android:backgroundTint="#009900"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"/>
 
@@ -155,7 +162,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:text="장애인"
-            android:textSize="12sp"
+            android:backgroundTint="#0019F4"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"/>
 
@@ -177,7 +185,8 @@
             android:layout_weight="1"
             android:layout_marginLeft="5dp"
             android:text="핑크"
-            android:textSize="12sp"
+            android:backgroundTint="#E94097"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"/>
 
@@ -188,7 +197,8 @@
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:text="노랑"
-            android:textSize="12sp"
+            android:backgroundTint="#FFD400"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"/>
 
@@ -200,7 +210,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:text="시안"
-            android:textSize="12sp"
+            android:backgroundTint="#00A3D2"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"/>
 

@@ -58,8 +58,10 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+    </LinearLayout>
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
             android:orientation="horizontal"
@@ -67,20 +69,22 @@
 
             <Button
                 android:id="@+id/startScanBtn"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_margin="1dp"
+                android:backgroundTint="#4169E1"
                 android:text="Scan\nStart" />
 
             <Button
                 android:id="@+id/stopScanBtn"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_margin="1dp"
+                android:backgroundTint="#4169E1"
                 android:text="Scan\nStop" />
         </LinearLayout>
-    </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,6 +113,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
+                android:backgroundTint="#4169E1"
                 android:text="연결"
                 android:textStyle="bold"
                 android:textSize="20sp" />

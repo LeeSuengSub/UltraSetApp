@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import net.woorisys.UltraSetApp.ble.BluetoothLeService;
 import net.woorisys.UltraSetApp.ble.SampleGattAttributes;
@@ -253,6 +254,7 @@ public class DeviceControlActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
+
             }
         });
 
